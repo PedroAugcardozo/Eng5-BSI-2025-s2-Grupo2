@@ -24,6 +24,13 @@ public class Parametrizacao {
     public Parametrizacao(){
         this.parametrizacaoDAO = new ParametrizacaoDAO();
     }
+
+    public Parametrizacao(String par_cnpj, String par_telefone, String par_razao_social) {
+        this.par_cnpj = par_cnpj;
+        this.par_telefone = par_telefone;
+        this.par_razao_social = par_razao_social;
+    }
+
     public Parametrizacao(String par_cnpj, String par_razao_social, String par_nome_fantasia, String par_site, String par_email, String par_telefone, String par_contato, String par_rua, String par_bairro, String par_cidade, String par_uf, String par_cep, String par_logo_grande, String par_logo_pequeno) {
         this.par_cnpj = par_cnpj;
         this.par_razao_social = par_razao_social;

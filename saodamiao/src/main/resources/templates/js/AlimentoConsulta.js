@@ -2,11 +2,8 @@ document.addEventListener('DOMContentLoaded',()=>{
     const link = document.getElementById('consultar-alimento');
     const main = document.getElementById('app-content');
 
-
-
-    const telaConsulta= `
-        
-        <section class="container py-4 min-vh-100 d-flex align-items-center">
+const telaConsulta= `
+<section class="container py-4 min-vh-100 d-flex align-items-center">
   <div class="row justify-content-center w-100">
     <div class="col-12 col-lg-8 col-xl-6">
       <div class="card shadow-sm">
