@@ -1,3 +1,9 @@
+const tam_pagina = 6;
+const estado_pag = {
+    dados : [],
+    pagina_atual: 0,
+    qtd_max_pag : 0
+}
 document.addEventListener('DOMContentLoaded',()=>{
     const link = document.getElementById('consultar-alimento');
     const main = document.getElementById('app-content');
@@ -39,13 +45,7 @@ document.addEventListener('DOMContentLoaded',()=>{
                   <th scope="col" class="text-end" style="width: 10%">Ações</th>
                 </tr>
               </thead>
-              <tbody id="lista-alimentos">
-                <!-- Exemplo de linha vazia/estado inicial -->
-                <tr class="text-muted">
-                  <td colspan="3" class="text-center py-4">
-                    Nenhum item encontrado.
-                  </td>
-                </tr>
+              <tbody id="lista-alimentos">              
               </tbody>
             </table>
           </div>
@@ -62,10 +62,159 @@ document.addEventListener('DOMContentLoaded',()=>{
 </section>
 `;
 
+    const alimentos = async function(){
+        const response = await fetch('http://localhost:8080/apis/alimentos/getall');
+        if (!response.ok) throw new Error(await response.text());
+        return await response.json();
+    }
+
+    async function insereAlimentosTabela() {
+        const table = document.getElementById('lista-alimentos');
+
+        try {
+            const conteudo = await alimentos();
+
+            const data = Array.isArray(conteudo) ? conteudo :
+                (Array.isArray(conteudo?.content) ? conteudo.content : []);
+
+            estado_pag.dados = data;
+            estado_pag.qtd_max_pag = Math.ceil(data.length / tam_pagina);
+            if (!data.length) {
+                const tr = document.createElement('tr');
+                const td = document.createElement('td');
+                td.colSpan = 99;
+                td.textContent = 'Nenhum alimento encontrado.';
+                td.className = 'text-center py-4';
+                tr.appendChild(td);
+                table.appendChild(tr);
+                return;
+            }
 
 
-    link.addEventListener('click', (e)=>{
+            let nav = document.createElement('nav');
+            nav.id = 'paginacao';
+
+            const tabela = document.getElementById('lista-alimentos')?.closest('table');
+            ;
+            (tabela?.parentElement || document.body).appendChild(nav);
+
+            nav.innerHTML = '';
+
+            const btn = (label, target) => {
+                const b = document.createElement('button');
+                b.type = 'button';
+                b.textContent = label;
+                b.disabled = false;
+                b.className = 'px-3 py-1 border rounded mx-1';
+                if (target) {
+                    b.onclick = () => {
+                        if (estado_pag.pagina_atual + 1 < estado_pag.qtd_max_pag) {
+                            estado_pag.pagina_atual++;
+                            carregarPagina();
+                        }
+                    }
+
+                } else {
+                    b.onclick = () => {
+                        if (estado_pag.pagina_atual - 1 >= 0) {
+                            estado_pag.pagina_atual--;
+                            carregarPagina();
+                        }
+                    }
+                }
+                return b;
+            }
+            nav.appendChild(btn('«', false));
+            const span = document.createElement('span');
+            span.textContent = `Página ${estado_pag.pagina_atual + 1} de ${estado_pag.qtd_max_pag + 1}`;
+            span.className = 'mx-2';
+            span.id = 'qtd-pagina';
+            nav.appendChild(span);
+            nav.appendChild(btn('»', true));
+            carregarPagina();
+
+
+        } catch (err) {
+            console.error(err);
+            const tr = document.createElement('tr');
+            const td = document.createElement('td');
+            td.colSpan = 99;
+            td.textContent = `Erro ao carregar: ${err.message || err}`;
+            td.className = 'text-center py-4';
+            tr.appendChild(td);
+            table.appendChild(tr);
+        }
+
+
+        function carregarPagina() {
+            const table = document.getElementById('lista-alimentos');
+
+            while (table.firstChild) table.removeChild(table.firstChild);
+
+            const colunas = ['nome', 'tipo_alimento'];
+
+            let pos = estado_pag.pagina_atual * tam_pagina; // indice de 0...x
+            let aux = pos;
+            for (; pos < aux + tam_pagina; pos++) {
+                let cont = estado_pag.dados[pos];
+                if(cont == null)
+                    break;
+                const tr = document.createElement('tr');
+                colunas.forEach(cols => {
+                    const td = document.createElement('td');
+                    const cnt = cont?.[cols];
+                    td.textContent = cnt == null ? "" : cnt;
+                    tr.appendChild(td);
+                })
+                const divaux = document.createElement('div');
+                const td = document.createElement('td');
+                const buttonAlterar = criarBotaoAlterar(pos);
+                const buttonApagar = criarBotaoExcluir(pos);
+                divaux.appendChild(buttonAlterar);
+                divaux.appendChild(buttonApagar);
+                divaux.className = 'd-flex align-items-center gap-2';
+                td.appendChild(divaux);
+
+                tr.appendChild(td);
+
+                table.appendChild(tr);
+            }
+            const span = document.getElementById('qtd-pagina');
+            span.textContent = `Página ${estado_pag.pagina_atual + 1} de ${estado_pag.qtd_max_pag}`;
+
+        }
+    }
+
+    function criarBotaoAlterar(id) {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'btn btn-primary btn-sm alterar-btn';
+        btn.dataset.id = String(id);
+
+        const icon = document.createElement('i');
+        icon.className = 'bi bi-pencil me-1';
+
+        btn.appendChild(icon);
+        return btn;
+    }
+
+    function criarBotaoExcluir(id) {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'btn btn-danger btn-sm excluir-btn red';
+        btn.dataset.id = String(id);
+
+        const icon = document.createElement('i');
+        icon.className = 'bi bi-trash me-1';
+
+        btn.appendChild(icon);
+        return btn;
+    }
+
+    link.addEventListener('click', (e) => {
         e.preventDefault();
         main.innerHTML = telaConsulta;
+        insereAlimentosTabela();
     })
+
 });
