@@ -22,22 +22,7 @@ public class ParametrizacaoDAO implements IDAO<Parametrizacao>{
     @Override
     public boolean gravar(Parametrizacao entidade, Conexao conexao) {
         String sql = "INSERT INTO parametrizacao (par_cnpj,par_razao_social,par_nome_fantasia,par_site,par_email,par_telefone,par_contato,par_rua,par_bairro,par_cidade,par_uf,par_cep,par_logo_grande,par_logo_pequeno)"+
-                "VALUES ('#1','#2','#3','#4','#5','#6','#7','#8','#9','#10','#11','#12','#13','#14')";
-
-            sql = sql.replace("#1", ""+entidade.getPar_cnpj())
-                    .replace("#2", ""+entidade.getPar_razao_social())
-                    .replace("#3",""+entidade.getPar_nome_fantasia())
-                    .replace("#4",""+entidade.getPar_site())
-                    .replace("#5",""+entidade.getPar_email())
-                    .replace("#6",""+entidade.getPar_telefone())
-                    .replace("#7",""+entidade.getPar_contato())
-                    .replace("#8",""+entidade.getPar_rua())
-                    .replace("#9",""+entidade.getPar_bairro())
-                    .replace("#10",""+entidade.getPar_cidade())
-                    .replace("#11",""+entidade.getPar_uf())
-                    .replace("#12",""+entidade.getPar_cep())
-                    .replace("#13",""+entidade.getPar_logo_grande())
-                    .replace("#14",""+entidade.getPar_logo_pequeno());
+                "VALUES ('"+entidade.getPar_cnpj()+"','"+entidade.getPar_razao_social()+"','"+entidade.getPar_nome_fantasia()+"','"+entidade.getPar_site()+"','"+entidade.getPar_email()+"','"+entidade.getPar_telefone()+"','"+entidade.getPar_contato()+"','"+entidade.getPar_rua()+"','"+entidade.getPar_bairro()+"','"+entidade.getPar_cidade()+"','"+entidade.getPar_uf()+"','"+entidade.getPar_cep()+"','"+entidade.getPar_logo_grande()+"','"+entidade.getPar_logo_pequeno()+"')";
 
             return conexao.manipular(sql);
     }

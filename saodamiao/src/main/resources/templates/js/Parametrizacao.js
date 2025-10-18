@@ -23,7 +23,6 @@ async function carregarParametrizacao() {
         // Qualquer outro erro HTTP (400, 500, etc.)
         if (!response.ok) {
             const msg = await response.text().catch(() => '');
-            console.error('Erro HTTP', response.status, msg);
             abrirCadastro();
             return;
         }
@@ -242,7 +241,7 @@ function abrirCadastro()
                 par_rua:           document.getElementById('par_rua').value,
                 par_bairro:        document.getElementById('par_bairro').value,
                 par_cidade:        document.getElementById('par_cidade').value,
-                par_uf:            document.getElementById('par_uf').value.toUpperCase(),
+                par_uf:            document.getElementById('par_uf').value.toLowerCase(),
                 par_cep:           document.getElementById('par_cep').value,
                 par_logo_grande:   document.getElementById('par_logo_grande').value,
                 par_logo_pequeno:  document.getElementById('par_logo_pequeno').value
@@ -257,6 +256,7 @@ function abrirCadastro()
 
             toggleLoading(true);
             try {
+                console.log(dto);
                 const resp = await fetch('http://localhost:8080/Parametrizacao/inserir', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },

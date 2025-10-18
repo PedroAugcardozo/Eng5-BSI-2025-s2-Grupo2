@@ -16,71 +16,34 @@ public class ParametrizacaoControl {
     @GetMapping(value = "/home")
     ResponseEntity<Object> buscarParametrizacao(){
 
-        Parametrizacao parametrizacao = new Parametrizacao();
-        parametrizacao = parametrizacao.getParametrizacaoDAO().pegarParametro(Singleton.Retorna());
-        if(Singleton.Retorna().getEstadoConexao())
-        {
-            if(parametrizacao != null)
-            {   ParametrizacaoDTO  parametrizacaoDTO = new ParametrizacaoDTO(parametrizacao);
-                Singleton.Retorna().CloseConnection();
-                return ResponseEntity.ok(parametrizacaoDTO);
-            }
-            else
-            {
-                Singleton.Retorna().CloseConnection();
-                return ResponseEntity.badRequest().body(new Erro("nenhuma empresa cadastrada"));
-            }
+        Parametrizacao par = new Parametrizacao();
+        Parametrizacao parametrizacao = par.getParametrizacaoDAO().pegarParametro(Singleton.Retorna());
 
+        if(parametrizacao != null)
+        {   ParametrizacaoDTO  parametrizacaoDTO = new ParametrizacaoDTO(parametrizacao);
+            return ResponseEntity.ok(parametrizacaoDTO);
         }
-        return ResponseEntity.status(500).body(new Erro(Singleton.Retorna().getMensagemErro()));
+        else
+        {
+            return ResponseEntity.badRequest().body(new Erro("nenhuma empresa cadastrada"));
+        }
     }
 
     @PostMapping(value = "/inserir")
     ResponseEntity<Object> InserirParametrizacao(@RequestBody ParametrizacaoFormDTO parametrizacaoFormDTO){
 
+        Parametrizacao par = new Parametrizacao();
         Parametrizacao parametrizacao1 = parametrizacaoFormDTO.toParametrizacao();
         if(!Singleton.Retorna().StartTransaction())
         {
             return ResponseEntity.status(500).body(new Erro(Singleton.Retorna().getMensagemErro()));
         }
-        if(!parametrizacao1.getParametrizacaoDAO().gravar(parametrizacao1,Singleton.Retorna()))
+        if(!par.getParametrizacaoDAO().gravar(parametrizacao1,Singleton.Retorna()))
         {
             Singleton.Retorna().Rollback(); // apenas para finalizar a transação
-            Singleton.Retorna().CloseConnection();
             return ResponseEntity.badRequest().body(new Erro("Problema ao gravar no banco de dados"));
         }
         Singleton.Retorna().Commit();
-        Singleton.Retorna().CloseConnection();
         return ResponseEntity.ok(parametrizacaoFormDTO);
     }
 }
-
-
-
-
-
-
-
-/*if(!parametro.getParametrizacaoDAO().gravar(parametro,Singleton.Retorna()))
-        {
-        Singleton.Retorna().Rollback(); // apenas para finalizar a transação
-                Singleton.Retorna().CloseConnection();
-                return ResponseEntity.badRequest().body(new Erro("Problema ao gravar no banco de dados"));
-        }
-        Singleton.Retorna().Commit();
-            Singleton.Retorna().CloseConnection();
-            return ResponseEntity.ok(parametro);
-public ResponseEntity<Object> InsereAlimento(@RequestBody AlimentoDTO alimentoDTO) {
-    Alimento alimento = alimentoDTO.toAlimento();
-
-    if(!Singleton.Retorna().StartTransaction())
-        return ResponseEntity.status(500).body(new Erro(Singleton.Retorna().getMensagemErro()));
-
-    if(!alimento.getAlimentoDAO().gravar(alimento, Singleton.Retorna())) {
-        Singleton.Retorna().Rollback(); // apenas para finalizar a transação
-        Singleton.Retorna().CloseConnection();
-        return ResponseEntity.badRequest().body(new Erro("Problema ao gravar no banco de dados"));
-    }
-    Singleton.Retorna().Commit();
-    Singleton.Retorna().CloseConnection();
-    return ResponseEntity.ok(alimentoDTO);*/
