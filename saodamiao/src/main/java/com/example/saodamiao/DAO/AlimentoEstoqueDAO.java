@@ -6,8 +6,6 @@ import com.example.saodamiao.Singleton.Singleton;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.time.LocalDate;
-import java.util.List;
 
 public class AlimentoEstoqueDAO {
     public AlimentoEstoqueDAO() {}
@@ -44,4 +42,25 @@ public class AlimentoEstoqueDAO {
         }
     }
 
+    public Boolean AtualizaQtde(long idAlimento,int quantidade){
+        Conexao conexao = new Conexao();
+        String SQL = "select * from ESTOQUE_ALIMENTO where alimentos_idAlimentos=#1 and ESA_VALIDADE ='#2';";
+        SQL = SQL.replace("#1", String.valueOf(idAlimento));
+        SQL = SQL.replace("#2", String.valueOf(quantidade));
+        try{
+            ResultSet rs = Singleton.Retorna().consultar(SQL);
+            if(rs.next()){
+                quantidade= quantidade + rs.getInt("ESA_QTD");
+                SQL = "UPDATE FROM ESTOQUE_ALIMENTO SET ESA_QTD=#1 WHERE alimentos_idAlimentos=#2";
+                SQL = SQL.replace("#1", String.valueOf(quantidade));
+                SQL = SQL.replace("#2", String.valueOf(quantidade));
+                conexao.manipular(SQL);
+                return true;
+            }
+            return false;
+        }catch (SQLException e){
+            e.printStackTrace();
+            return false;
+        }
+    }
 }
