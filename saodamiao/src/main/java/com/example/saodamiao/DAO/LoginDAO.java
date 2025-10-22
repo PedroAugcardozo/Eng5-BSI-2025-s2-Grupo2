@@ -26,4 +26,12 @@ public class LoginDAO {
         }
         return login1;
     }
+    public Boolean MudarParaInativo(Login login, Conexao conexao){
+        String sql = "UPDATE login SET " + "log_ativo" + login.getLoginAtivo();
+        return conexao.manipular(sql);
+    }
+    public Boolean MudarParaativo(Login login, Conexao conexao){
+        String sql = "UPDATE login SET " + "log_ativo" + login.getLoginAtivo();
+        return conexao.manipular(sql);
+    }
 }

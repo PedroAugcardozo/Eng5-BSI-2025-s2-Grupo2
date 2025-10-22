@@ -30,4 +30,8 @@ public class Login {
         LoginDAO loginDAO = new LoginDAO();
         return loginDAO.ResgatarLogin(loginUserName, conexao);
     }
+    public Boolean MudarAtividade(Login login, Conexao conexao){
+        loginDAO = new LoginDAO();
+        return loginDAO.MudarParaInativo(login, conexao);
+    }
 }
