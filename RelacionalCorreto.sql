@@ -130,7 +130,7 @@ create table login (
   log_ativo varchar(1) not null,
   log_senha varchar(10) not null,
   primary key (colaborador_idcolaborador),
-  constraint fk_login_colaborador1
+  constraint fk_ _colaborador1
     foreign key (colaborador_idcolaborador)
     references colaborador (idcolaborador)
     on delete no action

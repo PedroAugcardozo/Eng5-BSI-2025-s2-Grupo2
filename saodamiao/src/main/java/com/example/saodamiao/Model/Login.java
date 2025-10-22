@@ -1,5 +1,8 @@
 package com.example.saodamiao.Model;
 
+import com.example.saodamiao.DAO.ColaboradorDAO;
+import com.example.saodamiao.DAO.LoginDAO;
+import com.example.saodamiao.Singleton.Conexao;
 import lombok.Data;
 
 @Data
@@ -9,6 +12,7 @@ public class Login {
     private String loginAtivo;
     private String loginSenha;
 
+    private LoginDAO loginDAO;
     public Login(int idColaborador, String loginUserName, String loginSenha, String loginAtivo) {
         this.idColaborador = idColaborador;
         this.loginUserName = loginUserName;
@@ -16,35 +20,14 @@ public class Login {
         this.loginAtivo = loginAtivo;
     }
 
-    public int getIdColaborador() {
-        return idColaborador;
-    }
+    public Login() {}
 
-    public void setIdColaborador(int idColaborador) {
+    public Login(int idColaborador, String cpf){
         this.idColaborador = idColaborador;
+        this.loginUserName = cpf;
     }
-
-    public String getLoginUserName() {
-        return loginUserName;
-    }
-
-    public void setLoginUserName(String loginUserName) {
-        this.loginUserName = loginUserName;
-    }
-
-    public String getLoginSenha() {
-        return loginSenha;
-    }
-
-    public void setLoginSenha(String loginSenha) {
-        this.loginSenha = loginSenha;
-    }
-
-    public String getLoginAtivo() {
-        return loginAtivo;
-    }
-
-    public void setLoginAtivo(String loginAtivo) {
-        this.loginAtivo = loginAtivo;
+    public Login buscarLogin(String loginUserName, Conexao conexao){
+        LoginDAO loginDAO = new LoginDAO();
+        return loginDAO.ResgatarLogin(loginUserName, conexao);
     }
 }
