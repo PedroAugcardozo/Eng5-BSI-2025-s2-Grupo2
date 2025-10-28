@@ -22,35 +22,41 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @Configuration
 @EnableWebSecurity
 public class ConfiguracaoSeguranca {
-
-    // 1. Injete seu filtro de segurança
     @Autowired
     private SecurityFilter securityFilter;
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception{
+    public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         return httpSecurity
                 .csrf(csrf -> csrf.disable())
-
                 .cors(Customizer.withDefaults())
-
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorize -> authorize
+                        //ROTAS PÚBLICAS
+                        //Permite acesso total a estas rotas específicas
+                        .requestMatchers(HttpMethod.POST, "/entrar").permitAll()
 
-                        .requestMatchers(HttpMethod.POST, "/login/entrar").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/login/registrar").permitAll()
+                        //ROTAS DE "AÇÃO" (exigem permissão específica)
+                        //Exige que o "crachá" do usuário contenha a string exata "VENDA_BAZAR"
+                        .requestMatchers("/vendas/**").hasAuthority(PermissaoConstantes.VENDA_BAZAR)
 
-                        // Bloqueia todo o resto
+                        //ROTAS DE "PAPEL" (Roles)
+                        //Exige que o "crachá" contenha "ROLE_ADMIN"
+                        .requestMatchers("/colaboradores/**").hasAuthority(PermissaoConstantes.ROLE_ADMIN)
+                        .requestMatchers("/permissoes/**").hasAuthority(PermissaoConstantes.ROLE_ADMIN)
+
+                        //ROTAS DE "PAPEL" MÚLTIPLO
+                        //Exige "ROLE_ADMIN" OU "ROLE_GESTOR"
+                        .requestMatchers("/relatorios/**").hasAnyAuthority(PermissaoConstantes.ROLE_ADMIN, PermissaoConstantes.ROLE_GESTOR)
+
+                        //REGRA FINAL (Pega-Tudo)
+                        //Qualquer outra requisição não listada acima (ex: GET /alimentos)
+                        //deve estar, no mínimo, autenticada.
                         .anyRequest().authenticated()
                 )
-
-                // 4. ADICIONE SEU FILTRO JWT
-                // Ele deve rodar ANTES do filtro padrão
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
-
                 .build();
     }
-
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
@@ -59,12 +65,11 @@ public class ConfiguracaoSeguranca {
     @Bean
     public PasswordEncoder passwordEncoder(){return new BCryptPasswordEncoder();}
 
-    // Seu Bean de CORS (está correto)
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         // Em produção, NUNCA use "addAllowedOrigin("*")"
-        // Especifique o domínio do seu front-end: ex: "http://meu-site.com"
+        // Especifiquem o domínio do front-end: ex: "http://meu-site.com"
         configuration.addAllowedOrigin("*");
         configuration.addAllowedMethod("*"); // Permite POST, GET, PUT, DELETE, etc.
         configuration.addAllowedHeader("*"); // Permite cabeçalhos como Authorization, Content-Type

@@ -1,13 +1,8 @@
-package com.example.saodamiao.Model;
-
-import com.example.saodamiao.DAO.ColaboradorDAO;
-import com.example.saodamiao.DTO.ColaboradorDTO;
-import com.example.saodamiao.Singleton.Conexao;
+package com.example.saodamiao.DTO;
 
 import java.sql.Date;
 
-
-public class Colaborador {
+public class ColaboradorDTO {
     private int idColaborador;
     private String nome;
     private String cpf;
@@ -19,15 +14,22 @@ public class Colaborador {
     private String cep;
     private String uf;
     private String cidade;
+    private String loginAtivo;
+    private String loginUserName;
+    private String loginSenha;
+    private Date dtMat;
 
-    private ColaboradorDAO colaboradorDAO;
-    public Colaborador(){
-        colaboradorDAO = new ColaboradorDAO();
+
+    public String getLoginUserName() {
+        return loginUserName;
     }
 
-    public Colaborador BuscarColaborador(int idColaborador, Conexao conexao){
-        colaboradorDAO = new ColaboradorDAO();
-       return colaboradorDAO.ResgatarColaborador(idColaborador, conexao);
+    public void setLoginUserName(String loginUserName) {
+        this.loginUserName = loginUserName;
+    }
+
+    public void setDtMat(Date dtMat) {
+        this.dtMat = dtMat;
     }
 
     public int getIdColaborador() {
@@ -102,14 +104,6 @@ public class Colaborador {
         this.cep = cep;
     }
 
-    public String getUf() {
-        return uf;
-    }
-
-    public void setUf(String uf) {
-        this.uf = uf;
-    }
-
     public String getCidade() {
         return cidade;
     }
@@ -118,11 +112,27 @@ public class Colaborador {
         this.cidade = cidade;
     }
 
-    public Boolean CriarColaborador(ColaboradorDTO novoColaborador, Conexao conexao){
-        colaboradorDAO = new ColaboradorDAO();
-        return colaboradorDAO.CriarColaborador(novoColaborador, conexao);
+    public String getUf() {
+        return uf;
     }
 
-    public void setDtMat(Date dateTimeFormatter) {
+    public void setUf(String uf) {
+        this.uf = uf;
+    }
+
+    public String getLoginAtivo() {
+        return loginAtivo;
+    }
+
+    public void setLoginAtivo(String loginAtivo) {
+        this.loginAtivo = loginAtivo;
+    }
+
+    public String getLoginSenha() {
+        return loginSenha;
+    }
+
+    public void setLoginSenha(String loginSenha) {
+        this.loginSenha = loginSenha;
     }
 }

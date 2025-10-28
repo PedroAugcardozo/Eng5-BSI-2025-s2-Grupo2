@@ -4,6 +4,7 @@ import com.example.saodamiao.Model.Permissoes;
 import com.example.saodamiao.Singleton.Conexao;
 
 import java.sql.Date;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -12,7 +13,7 @@ import java.util.List;
 public class PermissoesDAO {
 
     public Boolean CriarPermissao(Permissoes entidade, Conexao conexao){
-        String sql = "INSERT INTO permissao_usuario (colaborador_idcolaborador, gestor_colaborador_idcolaborador, gestor_idgestor, permissao_idpermissao, data_inicio, data_fim) values ('#2',#3,#4,#5,%6";
+        String sql = "INSERT INTO permissao_usuario (colaborador_idcolaborador, gestor_colaborador_idcolaborador, gestor_idgestor, permissao_idpermissao, data_inicio, data_fim) values ('#2','#3','#4','#5','#6')";
         sql = sql.replace("#1", String.valueOf(entidade.getIdColaborador()));
         sql = sql.replace("#2", String.valueOf(entidade.getIdGestorColaborador()));
         sql = sql.replace("#3", String.valueOf(entidade.getIdGestor()));
@@ -79,5 +80,24 @@ public class PermissoesDAO {
     public Boolean DeletarPermissao(int idColaborador, Conexao conexao){
         String sql = "DELETE FROM permissao_usuario WHERE colaborador_idcolaborador = "+ idColaborador;
         return conexao.manipular(sql);
+    }
+
+    public List<String> buscarPermissoesPorColaboradorId(int colaboradorId, Conexao conexao) {
+        List<String> permissoes = new ArrayList<>();
+        String sql = "SELECT p.tipo_permissao " +
+                "FROM permissao p " +
+                "JOIN permissao_usuario pu ON p.idpermissao = pu.permissao_idpermissao " +
+                "WHERE pu.colaborador_idcolaborador = #1 AND p.ativo = 'A'";
+        try {
+            sql = sql.replace("#1", String.valueOf(colaboradorId));
+            ResultSet rs = conexao.consultar(sql);
+            while (rs.next()) {
+                permissoes.add(rs.getString("tipo_permissao"));
+            }
+            rs.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return permissoes;
     }
 }

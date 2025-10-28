@@ -5,6 +5,8 @@ import com.example.saodamiao.DAO.LoginDAO;
 import com.example.saodamiao.Singleton.Conexao;
 import lombok.Data;
 
+import java.util.List;
+
 @Data
 public class Login {
     private int idColaborador;
@@ -12,7 +14,10 @@ public class Login {
     private String loginAtivo;
     private String loginSenha;
 
+    private Boolean senhaTemporaria;
+
     private LoginDAO loginDAO;
+
     public Login(int idColaborador, String loginUserName, String loginSenha, String loginAtivo) {
         this.idColaborador = idColaborador;
         this.loginUserName = loginUserName;
@@ -33,5 +38,26 @@ public class Login {
     public Boolean MudarAtividade(Login login, Conexao conexao){
         loginDAO = new LoginDAO();
         return loginDAO.MudarParaInativo(login, conexao);
+    }
+    public Boolean criarLogin(String userName, int id, String senha, String ativo, Conexao conexao){
+        loginDAO = new LoginDAO();
+        return loginDAO.CriarLogin(userName, id, senha, ativo, conexao);
+    }
+
+    public Boolean isSenhaTemporaria(){
+        return senhaTemporaria;
+    }
+
+    public List<Login> todosLogins(Conexao conexao){
+        loginDAO = new LoginDAO();
+        return loginDAO.loginsAtivos(conexao);
+    }
+
+    public Boolean getSenhaTemporaria() {
+        return senhaTemporaria;
+    }
+
+    public void setSenhaTemporaria(Boolean senhaTemporaria) {
+        this.senhaTemporaria = senhaTemporaria;
     }
 }

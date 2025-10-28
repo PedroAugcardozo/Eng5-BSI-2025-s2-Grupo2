@@ -1,66 +1,77 @@
-// Crie este arquivo no mesmo pacote da sua ConfiguracaoSeguranca
 package com.example.saodamiao.Configuracao;
 
+import com.example.saodamiao.DAO.LoginDAO;
+import com.example.saodamiao.DAO.PermissoesDAO;
 import com.example.saodamiao.Model.Login;
-import com.example.saodamiao.Singleton.Singleton;
+import com.example.saodamiao.Singleton.Conexao;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
-@Component // <-- Informa ao Spring que esta é uma classe gerenciada por ele
+@Component
 public class SecurityFilter extends OncePerRequestFilter {
 
-
     @Autowired
-    private com.example.saodamiao.Configuracao.TokenControl tokenControl; // Seu serviço que valida o token
+    private TokenControl tokenControl;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
-
-        // 1. Pega o token do cabeçalho
         var token = this.recuperarToken(request);
-
-        // 2. Se houver um token
         if (token != null) {
             try {
-                // 3. Valida o token e pega o "subject" (que deve ser o login)
-                var login = tokenControl.ValidarToken(token); // Você precisa ter esse método!
+                var loginSubject = tokenControl.ValidarToken(token);
+                if (loginSubject != null && !loginSubject.isEmpty()) {
+                    LoginDAO loginDAO = new LoginDAO();
+                    Conexao conexao = com.example.saodamiao.Singleton.Singleton.Retorna();
+                    Login usuario = loginDAO.buscarPorLogin(loginSubject, conexao);
 
-                // 4. Busca o usuário no banco de dados
-                Login login1 = new Login();
-                login1 = login1.buscarLogin(login1.getLoginUserName(), Singleton.Retorna()); // Seu repositório precisa ter esse método
-
-                // 5. Se o usuário existir, informa ao Spring que ele está autenticado
-                if (login1 != null) {
-                    var authentication = new UsernamePasswordAuthenticationToken(
-                            login1.getLoginSenha(), login1, null
-                    );
-
-                    // 6. Coloca o usuário no "Contexto de Segurança" do Spring
-                    SecurityContextHolder.getContext().setAuthentication(authentication);
+                    if (usuario != null) {
+                        PermissoesDAO permissoesDAO = new PermissoesDAO();
+                        List<String> nomesPermissoes = permissoesDAO.buscarPermissoesPorColaboradorId(
+                                usuario.getIdColaborador(),
+                                conexao
+                        );
+                        List<GrantedAuthority> authorities = new ArrayList<>();
+                        for (String permissao : nomesPermissoes) {
+                            authorities.add(new SimpleGrantedAuthority(permissao));
+                        }
+                        var authentication = new UsernamePasswordAuthenticationToken(
+                                usuario,
+                                null,             // Credenciais (sempre nulas após login)
+                                authorities       //permissões!
+                        );
+                        SecurityContextHolder.getContext().setAuthentication(authentication);
+                        String requestURI = request.getRequestURI();
+                        if (usuario.isSenhaTemporaria() && !requestURI.startsWith("/colaboradores")) {
+                            response.setStatus(HttpStatus.FORBIDDEN.value());
+                            response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+                            response.getWriter().write("{\"erro\": \"Acesso negado. Voce deve criar um colaborador primeiro.\"}");
+                            return;
+                        }
+                    }
                 }
             } catch (Exception e) {
-                // Se o token for inválido, expirado, etc.
-                // Apenas limpamos o contexto e deixamos o Spring bloquear (com 403)
+                e.printStackTrace();
                 SecurityContextHolder.clearContext();
             }
         }
-
-        // 7. Continua a cadeia de filtros (essencial!)
         filterChain.doFilter(request, response);
     }
-
-    // Método auxiliar para extrair o token
     private String recuperarToken(HttpServletRequest request) {
         var authHeader = request.getHeader("Authorization");
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {

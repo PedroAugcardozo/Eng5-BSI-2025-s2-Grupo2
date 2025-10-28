@@ -29,11 +29,10 @@ public class LoginControl {
     @PostMapping("/entrar")
     public ResponseEntity<?> login(@RequestBody AutenticacaoDTO autenticacaoDTO) {
         try {
-            // 3. Busca direto pelo repositório
             Login login = new Login();
             login = login.buscarLogin(autenticacaoDTO.getLogin(), Singleton.Retorna());
 
-            if (login == null || VerificaAtivo(autenticacaoDTO.getLogin()) || !passwordEncoder.matches(autenticacaoDTO.getSenha(), login.getLoginSenha())) {
+            if (login == null || VerificaAtivo(autenticacaoDTO.getLogin()) || !autenticacaoDTO.getSenha().equals(login.getLoginSenha())) {
                 return ResponseEntity.status(401).body(new Erro("Usuário ou senha inválidos"));
             }
 
@@ -45,13 +44,9 @@ public class LoginControl {
         }
     }
 
-    @PostMapping("/registrar")
-    public ResponseEntity CriarLogin(@RequestBody Login novoUsuario){
+    public Boolean criarLogin(String userName, String senha, int id){
         login = new Login();
-        login = login.buscarLogin(novoUsuario.getLoginUserName(), Singleton.Retorna());
-        if(login == novoUsuario){
-            return ResponseEntity.status(401).body("Usuario ou senha invalidos");
-        }
+        return login.criarLogin(userName, id, senha, "S", Singleton.Retorna());
     }
 
     public Boolean VerificaAtivo(String userName){
@@ -67,8 +62,8 @@ public class LoginControl {
     public ResponseEntity MudarParaInativo(@RequestBody String userName){
         login = new Login();
         login = login.buscarLogin(userName, Singleton.Retorna());
-        if(!VerificaAtivo(userName)){
-            return ResponseEntity.status(400).body("Nao e possivel desativar um login inativo");
+        if(!VerificaAtivo(userName) && login.todosLogins(Singleton.Retorna()).size() < 2){
+            return ResponseEntity.status(400).body("Nao e possivel desativar o login");
         }
         login.setLoginAtivo("N");
         if(login.MudarAtividade(login, Singleton.Retorna())){
