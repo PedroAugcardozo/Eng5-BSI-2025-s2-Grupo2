@@ -25,10 +25,9 @@ public class Colaborador {
         colaboradorDAO = new ColaboradorDAO();
     }
 
-    public Colaborador BuscarColaborador(int idColaborador, Conexao conexao){
-        colaboradorDAO = new ColaboradorDAO();
-       return colaboradorDAO.ResgatarColaborador(idColaborador, conexao);
-    }
+    public Colaborador BuscarColaborador(int idColaborador, Conexao conexao){return colaboradorDAO.ResgatarColaborador(idColaborador, conexao);}
+
+    public Colaborador BuscarPorCpf(String cpf, Conexao conexao){return colaboradorDAO.BuscarPorCpf(cpf, conexao);}
 
     public int getIdColaborador() {
         return idColaborador;

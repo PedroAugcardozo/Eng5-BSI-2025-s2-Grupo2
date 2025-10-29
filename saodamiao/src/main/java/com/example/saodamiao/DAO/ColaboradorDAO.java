@@ -51,4 +51,29 @@ public class ColaboradorDAO {
         return conexao.manipular(sql);
 
     }
+
+    public Colaborador BuscarPorCpf(String Cpf, Conexao conexao){
+        String sql = "SELECT * FROM colaborador WHERE cpf = '" + Cpf +"'";
+        Colaborador colaborador = null;
+        try{
+            ResultSet rs = conexao.consultar(sql);
+            if(rs.next()){
+                colaborador = new Colaborador();
+                colaborador.setIdColaborador(rs.getInt("idcolaborador"));
+                colaborador.setNome(rs.getString("nome"));
+                colaborador.setCpf(rs.getString("cpf"));
+                colaborador.setEmail(rs.getString("email"));
+                colaborador.setMat(rs.getDate("dt_mat"));
+                colaborador.setTelefone(rs.getString("telefone"));
+                colaborador.setUf(rs.getString("uf"));
+                colaborador.setCidade(rs.getString("cidade"));
+                colaborador.setBairro(rs.getString("bairro"));
+                colaborador.setRua(rs.getString("rua"));
+                colaborador.setCep(rs.getString("cep"));
+            }
+        }catch(SQLException e){
+            e.printStackTrace();
+        }
+        return colaborador;
+    }
 }

@@ -9,42 +9,34 @@ import java.util.List;
 
 @Data
 public class Permissoes {
-    private int idColaborador;
-    private int IdGestor;
-    private int idGestorColaborador;
     private int idPermissao;
-    private Date dataInicio;
-    private Date dataFim;
+    private String nomePermissao;
+    private String ativo;
 
     PermissoesDAO permissoesDAO;
-    public Permissoes(){}
+    public int getIdPermissao() {
+        return idPermissao;
+    }
 
-    public Permissoes(int idColaborador,int idGestorColaborador, int idGestor, int idPermissao, Date dataInicio, Date dataFim) {
-        this.idColaborador = idColaborador;
-        IdGestor = idGestor;
+    public void setIdPermissao(int idPermissao) {
         this.idPermissao = idPermissao;
-        this.dataInicio = dataInicio;
-        this.dataFim = dataFim;
-        this.idGestorColaborador = idGestorColaborador;
     }
-    public boolean CriarNoBanco(Permissoes entidade, Conexao conexao){
-        permissoesDAO = new PermissoesDAO();
-        return permissoesDAO.CriarPermissao(entidade, conexao);
+
+    public String getNomePermissao() {
+        return nomePermissao;
     }
-    public Permissoes BuscarUm(int idColaborador, Conexao conexao){
-        permissoesDAO = new PermissoesDAO();
-        return permissoesDAO.BuscarUm(idColaborador, conexao);
+
+    public void setNomePermissao(String nomePermissao) {
+        this.nomePermissao = nomePermissao;
     }
-    public List<Permissoes> BuscarTodos (Conexao conexao){
-        permissoesDAO = new PermissoesDAO();
-        return permissoesDAO.BuscarTodos(conexao);
+
+    public Permissoes BuscarPermissaoPorNome(String nomePermissao, Conexao conexao){return permissoesDAO.buscarPermissaoPorNome(nomePermissao, conexao);}
+
+    public Boolean InserirPermissaoUsuario(int idColaborador, int idGestor, int idPermissao, Conexao conexao){
+        return permissoesDAO.InserirPermissaoAoColaborador(idColaborador, idGestor, idPermissao, conexao);
     }
-    public Boolean AtualizarPermissao(Permissoes permissao, Conexao conexao){
-        permissoesDAO = new PermissoesDAO();
-        return permissoesDAO.AtualizarPermissao(permissao, conexao);
-    }
-    public Boolean DeletarPermissao(int idColaborador, Conexao conexao){
-        permissoesDAO = new PermissoesDAO();
-        return permissoesDAO.DeletarPermissao(idColaborador, conexao);
+
+    public Boolean DeletarPermissaoUsuario(int idColaborador, int idPermissao, Conexao conexao){
+        return permissoesDAO.DeletarPermissao(idColaborador, idPermissao, conexao);
     }
 }

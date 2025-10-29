@@ -3,14 +3,11 @@ package com.example.saodamiao.Control;
 
 import com.example.saodamiao.Configuracao.TokenControl;
 import com.example.saodamiao.DTO.AutenticacaoDTO;
-import com.example.saodamiao.DTO.LoginResponseDTO;
 import com.example.saodamiao.Model.Login;
 import com.example.saodamiao.Singleton.Erro;
 import com.example.saodamiao.Singleton.Singleton;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 

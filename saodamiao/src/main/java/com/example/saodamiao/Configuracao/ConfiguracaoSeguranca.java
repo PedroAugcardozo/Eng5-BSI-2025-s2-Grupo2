@@ -44,6 +44,7 @@ public class ConfiguracaoSeguranca {
                         //Exige que o "crachá" contenha "ROLE_ADMIN"
                         .requestMatchers("/colaboradores/**").hasAuthority(PermissaoConstantes.ROLE_ADMIN)
                         .requestMatchers("/permissoes/**").hasAuthority(PermissaoConstantes.ROLE_ADMIN)
+                        .requestMatchers("/vendas/**").hasAuthority(PermissaoConstantes.ROLE_ADMIN)
 
                         //ROTAS DE "PAPEL" MÚLTIPLO
                         //Exige "ROLE_ADMIN" OU "ROLE_GESTOR"
