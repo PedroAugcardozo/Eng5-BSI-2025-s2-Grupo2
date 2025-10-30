@@ -12,6 +12,44 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+
+/*
+* SQL PARA RODAR AS COISA ADICIONADAS
+* --=====================================================
+-- 3. INSERT DO GESTOR
+-- =====================================================
+INSERT INTO gestor (idgestor, colaborador_idcolaborador)
+VALUES (1, 1);
+
+-- =====================================================
+-- 4. INSERT DAS PERMISSÕES
+-- =====================================================
+INSERT INTO permissao (idpermissao, tipo_permissao, ativo) VALUES
+(1, 'ROLE_ADMIN', 'S'),
+(2, 'ROLE_GESTOR', 'S'),
+(3, 'ROLE_COLABORADOR', 'S'),
+(4, 'VENDA_BAZAR', 'S'),
+(5, 'GERENCIAR_CESTAS', 'S'),
+(6, 'GERENCIAR_ESTOQUE', 'S');
+
+-- =====================================================
+-- 5. INSERT DA PERMISSÃO DO USUÁRIO
+-- =====================================================
+INSERT INTO permissao_usuario
+(colaborador_idcolaborador, gestor_idgestor, gestor_colaborador_idcolaborador, permissao_idpermissao, data_inicio, data_fim)
+VALUES
+(1, 1, 1, 1, CURRENT_DATE, NULL);
+
+-- =====================================================
+-- 6. VERIFICAÇÃO (OPCIONAL)
+-- =====================================================
+SELECT * FROM colaborador;
+SELECT * FROM login;
+SELECT * FROM gestor;
+SELECT * FROM permissao;
+SELECT * FROM permissao_usuario;
+* */
+
 @RestController
 @RequestMapping(name = "/login")
 public class LoginControl {
