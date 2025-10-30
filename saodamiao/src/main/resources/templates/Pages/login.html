@@ -21,13 +21,13 @@
         <form id="login-form" novalidate>
 
             <div id="form-alert" class="alert alert-danger d-none" role="alert">
-                </div>
+            </div>
 
             <div class="mb-3">
-                <label for="cpf" class="form-label">CPF</label>
-                <input type="text" class="form-control" id="cpf" placeholder="Digite seu CPF (apenas números)" required>
-                <div id="cpf-feedback" class="invalid-feedback">
-                    Por favor, insira um CPF válido (11 dígitos).
+                <label for="username" class="form-label">Username</label>
+                <input type="text" class="form-control" id="username" placeholder="Digite seu nome de usuário" required>
+                <div id="username-feedback" class="invalid-feedback">
+                    Por favor, insira seu nome de usuário.
                 </div>
             </div>
 
@@ -35,18 +35,18 @@
                 <label for="password" class="form-label">Senha</label>
                 <input type="password" class="form-control" id="password" placeholder="Digite sua senha" required>
                 <div id="password-feedback" class="invalid-feedback">
-                    Senha Invalida
+                    Por favor, insira sua senha.
                 </div>
             </div>
 
             <button type="submit" class="btn btn-custom-blue w-100">
-                Entrar
+                Cadastrar
             </button>
         </form>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
     
-    <script src="script.js"></script>
+    <script src="../js/login.js"></script>
 </body>
 </html>

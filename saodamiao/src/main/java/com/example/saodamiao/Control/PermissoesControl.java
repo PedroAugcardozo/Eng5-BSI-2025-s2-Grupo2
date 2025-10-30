@@ -18,7 +18,7 @@ import java.util.List;
 public class PermissoesControl {
     Permissoes permissoes;
 
-    @PostMapping("/inserirpermissao")
+    @PostMapping("/inserirPermissao")
     public ResponseEntity InserirPermissao(@RequestBody AtribuirPermissaoDTO dto){
         //aqui eu procuro o id do usuario logado
         var authenticacao = SecurityContextHolder.getContext().getAuthentication();
@@ -43,7 +43,7 @@ public class PermissoesControl {
         return ResponseEntity.badRequest().body("Erro ao inserir Permissao");
     }
 
-    @PostMapping
+    @PostMapping("/deletarPermissao")
     public ResponseEntity DeletarPermissao(@RequestBody AtribuirPermissaoDTO dto){
         Colaborador colaborador = new Colaborador();
         colaborador = colaborador.BuscarPorCpf(dto.getCpfColaborador(), Singleton.Retorna());
@@ -61,5 +61,30 @@ public class PermissoesControl {
             return ResponseEntity.ok().body("Permissao Deletada");
         }
         return ResponseEntity.badRequest().body("erro ao deletar permissao");
+    }
+
+    //mudar para receber o nome da permissao e nao o ID
+    @PostMapping("/mudarParaAtiva")
+    public ResponseEntity mudarParaAtiva(@RequestBody String nomePermissao){
+        String atividade = permissoes.VerificaAtividade(nomePermissao, Singleton.Retorna());
+        if(atividade == "" && atividade == "S"){
+            return ResponseEntity.badRequest().body("Nao foi possivel atualizar a permissa");
+        }
+        if(permissoes.mudarAtividadeParaAtivo(nomePermissao, Singleton.Retorna())){
+            return ResponseEntity.ok().body("Mudanca realizada");
+        }
+        return ResponseEntity.badRequest().body("Nao foi possivel atualizar a permissa");
+    }
+
+    @PostMapping("/mudarParaIntiva")
+    public ResponseEntity mudarParaInativo(@RequestBody String nomePermissao){
+        String atividade = permissoes.VerificaAtividade(nomePermissao, Singleton.Retorna());
+        if(atividade == "" && atividade == "N"){
+            return ResponseEntity.badRequest().body("Nao foi possivel atualizar a permissa");
+        }
+        if(permissoes.mudarAtividadeParaAtivo(nomePermissao, Singleton.Retorna())){
+            return ResponseEntity.ok().body("Mudanca realizada");
+        }
+        return ResponseEntity.badRequest().body("Nao foi possivel atualizar a permissa");
     }
 }

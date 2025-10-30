@@ -39,4 +39,13 @@ public class Permissoes {
     public Boolean DeletarPermissaoUsuario(int idColaborador, int idPermissao, Conexao conexao){
         return permissoesDAO.DeletarPermissao(idColaborador, idPermissao, conexao);
     }
+    public String VerificaAtividade(String nomePermissao, Conexao conexao){
+        return permissoesDAO.VerificaAtividade(nomePermissao, conexao);
+    }
+    public Boolean mudarAtividadeParaAtivo(String nomePermissao, Conexao conexao){
+        return permissoesDAO.MudarAtividadePermissaoParaAtivo(nomePermissao, conexao);
+    }
+    public Boolean mudarAtividadeParaInativo(String nomePermissao, Conexao conexao){
+        return permissoesDAO.MudarAtivadadePermissaoParaInativo(nomePermissao, conexao);
+    }
 }

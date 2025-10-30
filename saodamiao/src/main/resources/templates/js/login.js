@@ -1,9 +1,9 @@
 document.addEventListener("DOMContentLoaded", function() {
 
     const loginForm = document.getElementById("login-form");
-    const cpfInput = document.getElementById("cpf");
+    const usernameInput = document.getElementById("username");
     const passwordInput = document.getElementById("password");
-    const cpfFeedback = document.getElementById("cpf-feedback");
+    const usernameFeedback = document.getElementById("username-feedback");
     const passwordFeedback = document.getElementById("password-feedback");
     const formAlert = document.getElementById("form-alert");
 
@@ -12,20 +12,20 @@ document.addEventListener("DOMContentLoaded", function() {
 
         resetValidation();
 
-        const cpf = cpfInput.value.replace(/\D/g, '');
-        const password = passwordInput.value;
+        const username = usernameInput.value.trim();
+        const password = passwordInput.value.trim();
 
         let isValid = true;
 
-        if (!validateCPF(cpf)) {
-            cpfInput.classList.add("is-invalid");
-            cpfFeedback.textContent = "Por favor, insira um CPF válido (11 dígitos).";
+        if (username === '') {
+            usernameInput.classList.add("is-invalid");
+            usernameFeedback.textContent = "Por favor, insira seu nome de usuário.";
             isValid = false;
         }
 
-        if (!validatePassword(password)) {
+        if (password === '') {
             passwordInput.classList.add("is-invalid");
-            passwordFeedback.textContent = "A senha deve ter min. 8 caracteres, uma maiúscula e um caractere especial.";
+            passwordFeedback.textContent = "Por favor, insira sua senha.";
             isValid = false;
         }
 
@@ -40,7 +40,7 @@ document.addEventListener("DOMContentLoaded", function() {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    login: cpf,
+                    login: username,
                     senha: password 
                 }),
             })
@@ -49,14 +49,20 @@ document.addEventListener("DOMContentLoaded", function() {
                     return response.json(); 
                 } else {
                     return response.json().then(err => {
-                        window.alert('CPF ou senha incorretos.');
-                        throw new Error(err.message || 'CPF ou senha incorretos.');
+                        throw new Error(err.message || 'Usuário ou senha incorretos.');
                     });
                 }
             })
             .then(data => {
-                console.log('Sucesso:', data);
-                showAlert('Login realizado com sucesso!', 'success');
+                console.log('Sucesso! Resposta JSON recebida:', data);
+
+                if (data && data.token) {
+                    localStorage.setItem('token', data.token);
+                } else {
+                    console.warn("Resposta JSON de sucesso não continha uma chave 'token'.");
+                }
+                
+                window.location.href = 'index.html'; 
             })
             .catch(error => {
                 console.error('Erro na requisição:', error.message);
@@ -65,20 +71,8 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     });
 
-    function validateCPF(cpf) {
-        const cpfLimpo = cpf.replace(/\D/g, '');
-        return cpfLimpo.length === 11;
-    }
-
-    function validatePassword(password) {
-        const minLength = 8;
-        const hasUpperCase = /[A-Z]/.test(password);
-        const hasSpecialChar = /[^A-Za-z0-9]/.test(password); 
-        return password.length >= minLength && hasUpperCase && hasSpecialChar;
-    }
-
     function resetValidation() {
-        cpfInput.classList.remove("is-invalid");
+        usernameInput.classList.remove("is-invalid");
         passwordInput.classList.remove("is-invalid");
         formAlert.classList.add("d-none"); 
     }

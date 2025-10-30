@@ -2,6 +2,10 @@ package com.example.saodamiao.DAO;
 
 import com.example.saodamiao.Model.Permissoes;
 import com.example.saodamiao.Singleton.Conexao;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -74,6 +78,28 @@ public class PermissoesDAO {
         sql = sql.replace("#1", String.valueOf(idColaborador))
                 .replace("#2", String.valueOf(idPermissao));
 
+        return conexao.manipular(sql);
+    }
+
+    public String VerificaAtividade(String nomePermissao, Conexao conexao){
+        String sql = "SELECT * FROM permissao WHERE tipo_permissao = '"+nomePermissao+"'";
+        try{
+            ResultSet rs = conexao.consultar(sql);
+            if(rs.next()){
+                return rs.getString("ativo");
+            }
+        }catch (SQLException e){
+            e.printStackTrace();
+        }
+        return "";
+    }
+
+    public Boolean MudarAtividadePermissaoParaAtivo(String nomePermissao, Conexao conexao){
+        String sql = "UPDATE permissao SET ativo = 'S' WHERE tipo_permissao = '"+nomePermissao+"'";
+        return conexao.manipular(sql);
+    }
+    public Boolean MudarAtivadadePermissaoParaInativo(String nomePermissao, Conexao conexao){
+        String sql = "UPDATE permissao SET ativo = 'N' WHERE tipo_permissao = '"+nomePermissao+"'";
         return conexao.manipular(sql);
     }
 }
